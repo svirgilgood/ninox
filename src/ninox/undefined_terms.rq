@@ -1,0 +1,243 @@
+PREFIX lexvo: <https://www.iso.org/standard/39534.html>
+PREFIX premis: <http://www.loc.gov/premis/rdf/v3/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ore: <http://www.openarchives.org/ore/terms/>
+PREFIX olac: <http://www.language-archives.org/OLAC/1.1/>
+PREFIX edm: <http://www.europeana.eu/schemas/edm/>
+PREFIX gvo: <http://vocab.getty.edu/ontology#>
+PREFIX erc: <https://www.dublincore.org/groups/kernel/spec/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dcam: <http://purl.org/dc/dcam/>
+PREFIX uchicago: <http://lib.uchicago.edu/>
+PREFIX rel: <http://id.loc.gov/vocabulary/relators/>
+PREFIX bf: <http://id.loc.gov/ontologies/bibframe/>
+PREFIX dcmi: <http://purl.org/dc/dcmitype/>
+
+
+SELECT DISTINCT ?undefinedTerm
+WHERE {
+  {
+    # ############################################################
+    # Find all of the Classes for the named individuals and make
+    # sure that the class is defined in the ontology.
+    # This ignores owl, rdf, and shacl classes.
+    # ############################################################
+    ?item rdf:type ?undefinedTerm .
+    FILTER(!isBlank(?undefinedTerm))
+    FILTER NOT EXISTS {
+      ?undefinedTerm rdf:type owl:Class .
+    }
+    FILTER( ?undefinedTerm NOT IN (
+      owl:AnnotationProperty,
+      owl:Class,
+      owl:DatatypeProperty,
+      owl:NamedIndividual,
+      owl:ObjectProperty,
+      owl:Restriction,
+      rdf:Property,
+      rdfs:Datatype,
+      sh:PrefixDeclaration,
+      sh:NodeShape,
+      sh:ShapeNode,
+      sh:SPARQLConstraint
+      )
+    )
+
+    BIND(str(?undefinedTerm) AS ?undefinedStr)
+  } UNION
+  {
+    # ############################################################
+    # Find all of the predicates and make sure that they are
+    # defined as some class. This is also ignoring the rdfs, rdf,
+    # owl, and shacl properties
+    # ############################################################
+    ?item ?undefinedTerm ?o .
+    FILTER NOT EXISTS {
+      ?undefinedTerm rdf:type ?someType .
+    }
+    FILTER(!isBlank(?undefinedTerm))
+    FILTER( ?undefinedTerm NOT IN (
+      rdf:first,
+      rdf:rest,
+      rdf:type,
+      rdfs:comment,
+      rdfs:domain,
+      rdfs:isDefinedBy,
+      rdfs:label,
+      rdfs:range,
+      rdfs:seeAlso,
+      rdfs:subClassOf,
+      rdfs:subPropertyOf,
+      owl:allValuesFrom,
+      owl:cardinality,
+      owl:disjoinWith,
+      owl:disjointWith,
+      owl:equivalentClass,
+      owl:equivalentProperty,
+      owl:hasValue,
+      owl:intersectionOf,
+      owl:inverseOf,
+      owl:inversePath,
+      owl:maxCardinality,
+      owl:maxQualifiedCardinality,
+      owl:minCardinality,
+      owl:minQualifiedCardinality,
+      owl:onClass,
+      owl:onProperty,
+      owl:oneOf,
+      owl:qualifiedCardinality,
+      owl:someValuesFrom,
+      owl:unionOf,
+      sh:ShapeNode,
+      sh:class,
+      sh:closed,
+      sh:datatype,
+      sh:declare,
+      sh:equals,
+      sh:hasValue,
+      sh:ignoredProperties,
+      sh:in,
+      sh:maxCount,
+      sh:maxLength,
+      sh:message,
+      sh:minCount,
+      sh:minLength,
+      sh:name,
+      sh:namespace,
+      sh:node,
+      sh:nodeKind,
+      sh:not,
+      sh:or,
+      sh:path,
+      sh:pattern,
+      sh:prefix,
+      sh:prefixes,
+      sh:property,
+      sh:select,
+      sh:severity,
+      sh:sparql,
+      sh:targetClass,
+      sh:xone,
+      sh:zeroOrMorePath 
+      )
+    )
+
+  } UNION 
+  {
+    # ############################################################
+    # Find all of the properties that are referenced by the model
+    # and make sure they have definitions.
+    # ignores rdf type and rdf value
+    # ############################################################
+    ?item ?property ?undefinedTerm .
+    VALUES ?property {
+      owl:onProperty
+      sh:path
+      owl:inverseOf
+    }
+    filter(!isBlank(?undefinedTerm))
+    FILTER NOT EXISTS {
+      ?undefinedTerm rdf:type ?someType .
+    }
+    FILTER (?undefinedTerm NOT IN (
+      rdf:first,
+      rdf:rest,
+      rdf:type,
+      rdf:value,
+      rdfs:comment,
+      rdfs:domain,
+      rdfs:isDefinedBy,
+      rdfs:label,
+      rdfs:range,
+      rdfs:seeAlso,
+      rdfs:subClassOf,
+      rdfs:subPropertyOf,
+      owl:allValuesFrom,
+      owl:cardinality,
+      owl:disjoinWith,
+      owl:disjointWith,
+      owl:equivalentClass,
+      owl:equivalentProperty,
+      owl:hasValue,
+      owl:intersectionOf,
+      owl:inverseOf,
+      owl:inversePath,
+      owl:maxCardinality,
+      owl:maxQualifiedCardinality,
+      owl:minCardinality,
+      owl:minQualifiedCardinality,
+      owl:onClass,
+      owl:onProperty,
+      owl:oneOf,
+      owl:qualifiedCardinality,
+      owl:someValuesFrom,
+      owl:unionOf,
+      sh:ShapeNode,
+      sh:class,
+      sh:closed,
+      sh:datatype,
+      sh:declare,
+      sh:equals,
+      sh:hasValue,
+      sh:ignoredProperties,
+      sh:in,
+      sh:maxCount,
+      sh:maxLength,
+      sh:message,
+      sh:minCount,
+      sh:minLength,
+      sh:name,
+      sh:namespace,
+      sh:node,
+      sh:nodeKind,
+      sh:not,
+      sh:or,
+      sh:path,
+      sh:pattern,
+      sh:prefix,
+      sh:prefixes,
+      sh:property,
+      sh:select,
+      sh:severity,
+      sh:sparql,
+      sh:targetClass,
+      sh:xone,
+      sh:zeroOrMorePath 
+    ))
+
+  } UNION
+  {
+    # ############################################################
+    # Find all of the classes referenced by sh:class and make sure
+    # that they have a definition.
+    # ############################################################
+    ?item sh:class ?undefinedTerm .
+    FILTER NOT EXISTS {
+      ?undefinedTerm rdf:type owl:Class .
+    }
+    FILTER(!isBlank(?undefinedTerm))
+    FILTER( ?undefinedTerm NOT IN (
+      owl:AnnotationProperty,
+      owl:Class,
+      owl:DatatypeProperty,
+      owl:NamedIndividual,
+      owl:ObjectProperty,
+      owl:Restriction,
+      rdf:Property,
+      rdfs:Datatype,
+      sh:PrefixDeclaration,
+      sh:NodeShape,
+      sh:ShapeNode,
+      sh:SPARQLConstraint
+      )
+    )
+  }
+}
+ORDER BY ?undefinedTerm

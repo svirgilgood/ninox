@@ -1,0 +1,611 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcam: <http://purl.org/dc/dcam/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dma: <http://lib.uchicago.edu/dma/> .
+@prefix edm: <http://www.europeana.eu/schemas/edm/> .
+@prefix erc: <https://www.dublincore.org/groups/kernel/spec/> .
+@prefix fn: <http://www.w3.org/2005/xpath-functions> .
+@prefix gvo: <http://vocab.getty.edu/ontology#> .
+@prefix icu: <http://lib.uchicago.edu/icu/> .
+@prefix lexvo: <https://www.iso.org/standard/39534.html> .
+@prefix olac: <http://www.language−archives.org/OLAC/metadata.html#> .
+@prefix ore: <http://www.openarchives.org/ore/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rel: <http://id.loc.gov/vocabulary/relators/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix uchicago: <http://lib.uchicago.edu/> .
+@prefix ucns: <http://lib.uchicago.edu/shapes/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ucns:AnnotationPropertyShape
+  a sh:NodeShape ;
+  sh:closed "true"^^xsd:boolean ;
+  sh:ignoredProperties (
+    rdfs:subPropertyOf
+    rdfs:isDefinedBy
+    rdfs:seeAlso
+    rdfs:comment
+    rdfs:range
+    rdfs:domain
+    rdfs:label
+    dcterms:modified
+    dcterms:issued
+    dcterms:description
+    owl:equivalentProperty
+  ) ;
+  sh:name "Annotation Property" ;
+  sh:property
+    ucns:_DcamDomainIncludesProperty ,
+    ucns:_DcamRangeIncludesProperty ,
+    ucns:_OwlInverseOfProperty ,
+    ucns:_PropertyRdfTypeLabelProperty ,
+    ucns:_PropertySkosPrefLabelProperty ,
+    ucns:_SkosDefinitionProperty ,
+    ucns:_SkosEditorialNote ,
+    ucns:_SkosExampleProperty ,
+    ucns:_SkosScopeNoteProperty
+    ;
+  sh:targetClass owl:AnnotationProperty ;
+  .
+
+ucns:ClassDefinitionShape
+  a sh:ShapeNode ;
+  sh:closed "true"^^xsd:boolean ;
+  sh:ignoredProperties (
+    owl:disjointWith
+    owl:equivalentClass
+    owl:intersectionOf
+    owl:unionOf
+    rdfs:isDefinedBy
+    rdfs:subClassOf
+    rdf:type
+    rdfs:comment
+    rdfs:label
+    skos:prefLabel
+    skos:editorialNote
+    skos:example
+    skos:definition
+    skos:scopeNote
+    dcterms:modified
+  ) ;
+  sh:name "Class Definition" ;
+  sh:or (
+    [
+      sh:property
+        ucns:_ClassDisjointWithProperty ,
+        ucns:_ClassRdfTypeProperty ,
+        ucns:_ClassSkosPrefLabelProperty ,
+        ucns:_SkosDefinitionProperty ,
+        ucns:_SkosEditorialNote ,
+        ucns:_SkosExampleProperty ,
+        ucns:_SkosScopeNoteProperty
+        ;
+    ]
+    [
+      sh:message "Error created with the Intersection property" ;
+      sh:property
+        ucns:_ClassIntersectionProperty ,
+        ucns:_ClassRdfTypeProperty
+        ;
+    ]
+    [
+      sh:property
+        ucns:_ClassRdfTypeProperty ,
+        ucns:_ClassUnionOfProperty
+        ;
+    ]
+  ) ;
+  sh:targetClass owl:Class ;
+  .
+
+ucns:DatatypePropertyShape
+  a sh:NodeShape ;
+  sh:closed "true"^^xsd:boolean ;
+  sh:ignoredProperties (
+    rdfs:subPropertyOf
+    rdfs:seeAlso
+    rdfs:isDefinedBy
+    rdfs:range
+    rdfs:comment
+    rdfs:label
+    dcterms:modified
+    dcterms:issued
+    dcterms:description
+  ) ;
+  sh:name "Datatype Property" ;
+  sh:property
+    ucns:_DcamDomainIncludesProperty ,
+    ucns:_DcamRangeIncludesProperty ,
+    ucns:_PropertyRdfTypeLabelProperty ,
+    ucns:_PropertySkosPrefLabelProperty ,
+    ucns:_SkosDefinitionProperty ,
+    ucns:_SkosEditorialNote ,
+    ucns:_SkosExampleProperty ,
+    ucns:_SkosScopeNoteProperty
+    ;
+  sh:targetClass owl:DatatypeProperty ;
+  .
+
+ucns:ListNodeShape
+  a sh:NodeShape ;
+  rdfs:label "List node shape"@en ;
+  rdfs:comment "Defines constraints on what it means for a node to be a node within a well-formed RDF list. Note that this does not check whether the rdf:rest items are also well-formed lists as this would lead to unsupported recursion."@en ;
+  sh:or (
+    [
+      sh:hasValue rdf:nil ;
+      sh:property
+        [
+          sh:maxCount "0"^^xsd:integer ;
+          sh:path rdf:first ;
+        ] ,
+        [
+          sh:maxCount "0"^^xsd:integer ;
+          sh:path rdf:rest ;
+        ]
+        ;
+    ]
+    [
+      sh:not [
+        sh:hasValue rdf:nil ;
+      ] ;
+      sh:property
+        [
+          sh:maxCount "1"^^xsd:integer ;
+          sh:minCount "1"^^xsd:integer ;
+          sh:or (
+            [
+              sh:class owl:Class ;
+            ]
+            [
+              sh:class rdfs:Datatype ;
+            ]
+            [
+              sh:class owl:Restriction ;
+            ]
+          ) ;
+          sh:path rdf:first ;
+        ] ,
+        [
+          sh:maxCount "1"^^xsd:integer ;
+          sh:minCount "1"^^xsd:integer ;
+          sh:path rdf:rest ;
+        ]
+        ;
+    ]
+  ) ;
+  .
+
+ucns:ListShape
+  a sh:NodeShape ;
+  rdfs:label "List shape"@en ;
+  rdfs:comment "A shape describing well-formed RDF lists. Currently does not check for non-recursion. This could be expressed using SHACL-SPARQL."@en ;
+  rdfs:seeAlso <https://www.w3.org/TR/shacl/#syntax-rule-SHACL-list> ;
+  sh:property [
+    rdfs:comment "Each list member (including this node) must be have the shape shsh:ListNodeShape."@en ;
+    sh:hasValue rdf:nil ;
+    sh:node ucns:ListNodeShape ;
+    sh:path [
+      sh:zeroOrMorePath rdf:rest ;
+    ] ;
+  ] ;
+  .
+
+ucns:ObjectPropertyShape
+  a sh:NodeShape ;
+  sh:closed "true"^^xsd:boolean ;
+  sh:ignoredProperties (
+    rdfs:subPropertyOf
+    rdfs:seeAlso
+    rdfs:comment
+    rdfs:label
+    rdfs:isDefinedBy
+    dcterms:modified
+    dcterms:issued
+    dcterms:description
+  ) ;
+  sh:name "Object Property" ;
+  sh:property
+    ucns:_DcamDomainIncludesProperty ,
+    ucns:_DcamRangeIncludesProperty ,
+    ucns:_OwlInverseOfProperty ,
+    ucns:_PropertyRdfTypeLabelProperty ,
+    ucns:_PropertySkosPrefLabelProperty ,
+    ucns:_RdfsDomainProperty ,
+    ucns:_RdfsRangeProperty ,
+    ucns:_SkosDefinitionProperty ,
+    ucns:_SkosEditorialNote ,
+    ucns:_SkosExampleProperty ,
+    ucns:_SkosScopeNoteProperty
+    ;
+  sh:targetClass owl:ObjectProperty ;
+  .
+
+ucns:RestrictionClassShape
+  a sh:NodeShape ;
+  sh:closed "true"^^xsd:boolean ;
+  sh:ignoredProperties (
+    rdfs:comment
+    owl:oneOf
+  ) ;
+  sh:name "Restriction Shape" ;
+  sh:property
+    ucns:_RestcitionMinQualifiedCardinalityProperty ,
+    ucns:_RestrictionAllValuesFromProperty ,
+    ucns:_RestrictionCardinalityProperty ,
+    ucns:_RestrictionHasValueProperty ,
+    ucns:_RestrictionMaxCardinalityProperty ,
+    ucns:_RestrictionMaxQualifiedCardinalityProperty ,
+    ucns:_RestrictionMinCardinalityProperty ,
+    ucns:_RestrictionOnClassProperty ,
+    ucns:_RestrictionOnPropertyProperty ,
+    ucns:_RestrictionQualifiedCardinalityProperty ,
+    ucns:_RestrictionTypeProperty ,
+    ucns:_RestrictionsomeValuesFromProperty
+    ;
+  sh:targetClass owl:Restriction ;
+  .
+
+ucns:_ClassDisjointWithProperty
+  sh:message "Disjoint with can occur on a class" ;
+  sh:or (
+    [
+      sh:node ucns:ListShape ;
+    ]
+    [
+      sh:class owl:Class ;
+    ]
+  ) ;
+  sh:path owl:disjointWith ;
+  .
+
+ucns:_ClassIntersectionProperty
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "When classes use the intersection shape, it should be a list of classes." ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:node ucns:ListShape ;
+  sh:path owl:intersectionOf ;
+  .
+
+ucns:_ClassRdfTypeProperty
+  sh:hasValue owl:Class ;
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "Every class should have the type of owl:Class." ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:path rdf:type ;
+  .
+
+ucns:_ClassSkosPrefLabelProperty
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "Every class should have one pref label that is Title Cased" ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:or (
+    [
+      sh:datatype rdf:langString ;
+    ]
+    [
+      sh:datatype xsd:string ;
+    ]
+  ) ;
+  sh:path skos:prefLabel ;
+  sh:pattern "([A-Z][a-z]+ ?)+" ;
+  .
+
+ucns:_ClassUnionOfProperty
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "Union Of properties must have a union of path" ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:node ucns:ListShape ;
+  sh:path owl:unionOf ;
+  .
+
+ucns:_DcamDomainIncludesProperty
+  sh:message "Prefer range includes over rdfs:range" ;
+  sh:minCount "0"^^xsd:integer ;
+  sh:path dcam:domainIncludes ;
+  .
+
+ucns:_DcamRangeIncludesProperty
+  sh:message "Prefer range includes over rdfs:range" ;
+  sh:minCount "0"^^xsd:integer ;
+  sh:path dcam:rangeIncludes ;
+  .
+
+ucns:_OwlInverseOfProperty
+  sh:message "Owl Inverse of property should be the inverse of the property" ;
+  sh:or (
+    [
+      sh:class owl:ObjectProperty ;
+    ]
+    [
+      sh:class owl:AnnotationProperty ;
+    ]
+    [
+      sh:class rdf:Property ;
+    ]
+  ) ;
+  sh:path owl:inverseOf ;
+  .
+
+ucns:_PropertyRdfTypeLabelProperty
+  sh:in (
+    rdf:Property
+    owl:AnnotationProperty
+    owl:DatatypeProperty
+    owl:ObjectProperty
+    owl:FunctionalProperty
+    owl:SymmetricProperty
+    owl:TransitiveProperty
+  ) ;
+  sh:maxCount "3"^^xsd:integer ;
+  sh:message "Property types can have various property types" ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:path rdf:type ;
+  .
+
+ucns:_PropertySkosPrefLabelProperty
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "Every property should have one pref label that is lower cased" ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:or (
+    [
+      sh:datatype rdf:langString ;
+    ]
+    [
+      sh:datatype xsd:string ;
+    ]
+  ) ;
+  sh:path skos:prefLabel ;
+  sh:pattern "([a-z]+ ?)+" ;
+  .
+
+ucns:_RdfsDomainProperty
+  sh:class owl:Class ;
+  sh:maxCount "0"^^xsd:integer ;
+  sh:message "Domain should be used only carefully. Does the domain really defined by being the subject of this property?" ;
+  sh:path rdfs:domain ;
+  sh:severity sh:Info ;
+  .
+
+ucns:_RdfsRangeProperty
+  sh:class owl:Class ;
+  sh:maxCount "0"^^xsd:integer ;
+  sh:message "Range should be used only carefully. Does the range really define the object as this class?" ;
+  sh:path rdfs:range ;
+  sh:severity sh:Info ;
+  .
+
+ucns:_RestcitionMinQualifiedCardinalityProperty
+  sh:datatype xsd:nonNegativeInteger ;
+  sh:message "Minimum qualified cardinality should have a nonNegativeInteger datatype." ;
+  sh:path owl:minQualifiedCardinality ;
+  .
+
+ucns:_RestrictionAllValuesFromProperty
+  sh:message "Owl Restrictions can have an `allValuesFrom` property, that will either be a class or a list of classes." ;
+  sh:or (
+    [
+      sh:class owl:Class ;
+    ]
+    [
+      sh:node ucns:ListShape ;
+    ]
+  ) ;
+  sh:path owl:allValuesFrom ;
+  .
+
+ucns:_RestrictionCardinalityProperty
+  sh:datatype xsd:nonNegativeInteger ;
+  sh:message "Restrictions can have an owl cardinality." ;
+  sh:path owl:cardinality ;
+  .
+
+ucns:_RestrictionHasValueProperty
+  sh:class owl:NamedIndividual ;
+  sh:message "When using a hasValue it should have a named individual as the value." ;
+  sh:path owl:hasValue ;
+  .
+
+ucns:_RestrictionMaxCardinalityProperty
+  sh:datatype xsd:nonNegativeInteger ;
+  sh:message "Max cardinality should have a nonNegativeInteger datatype." ;
+  sh:path owl:maxCardinality ;
+  .
+
+ucns:_RestrictionMaxQualifiedCardinalityProperty
+  sh:datatype xsd:nonNegativeInteger ;
+  sh:message "Max qualified cardinality should have a nonNegativeInteger datatype." ;
+  sh:path owl:maxQualifiedCardinality ;
+  .
+
+ucns:_RestrictionMinCardinalityProperty
+  sh:datatype xsd:nonNegativeInteger ;
+  sh:message "Minimum cardinality should have a nonNegativeInteger datatype." ;
+  sh:path owl:minCardinality ;
+  .
+
+ucns:_RestrictionOnClassProperty
+  sh:class owl:Class ;
+  sh:message "On Class restristions should point to an instance of an owl:Class." ;
+  sh:path owl:onClass ;
+  .
+
+ucns:_RestrictionOnPropertyProperty
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "All Owl Restrictions Must have a a `owl:onProperty` property." ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:or (
+    [
+      sh:class owl:AnnotationProperty ;
+    ]
+    [
+      sh:class owl:ObjectProperty ;
+    ]
+    [
+      sh:class owl:DatatypeProperty ;
+    ]
+    [
+      sh:class rdf:Property ;
+    ]
+    [
+      sh:node [
+        sh:property [
+          sh:path owl:inversePath ;
+        ] ;
+      ] ;
+    ]
+  ) ;
+  sh:path owl:onProperty ;
+  .
+
+ucns:_RestrictionQualifiedCardinalityProperty
+  sh:datatype xsd:nonNegativeInteger ;
+  sh:message "Qualified Cardinality should have a nonNegativeInteger datatype." ;
+  sh:path owl:qualifiedCardinality ;
+  .
+
+ucns:_RestrictionTypeProperty
+  sh:hasValue owl:Restriction ;
+  sh:maxCount "1"^^xsd:integer ;
+  sh:message "All Owl Restrictions must have the owl Restriction type, and only the owl restriction type." ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:path rdf:type ;
+  .
+
+ucns:_RestrictionsomeValuesFromProperty
+  sh:message "Owl Restrictions can have some values from, that will either be a class or a list of classes." ;
+  sh:or (
+    [
+      sh:class owl:Class ;
+    ]
+    [
+      sh:class rdfs:Datatype ;
+    ]
+    [
+      sh:node ucns:ListShape ;
+    ]
+    [
+      sh:hasValue xsd:string ;
+    ]
+    [
+      sh:hasValue xsd:dateTime ;
+    ]
+    [
+      sh:hasValue xsd:decimle ;
+    ]
+  ) ;
+  sh:path owl:someValuesFrom ;
+  .
+
+ucns:_SkosDefinitionProperty
+  sh:message "Every Class and property needs a definition" ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:or (
+    [
+      sh:datatype rdf:langString ;
+    ]
+    [
+      sh:datatype xsd:string ;
+    ]
+  ) ;
+  sh:path skos:definition ;
+  .
+
+ucns:_SkosEditorialNote
+  sh:message "Classes and properties can have an editorial note to describe more details for those who are editing the ontology." ;
+  sh:or (
+    [
+      sh:datatype rdf:langString ;
+    ]
+    [
+      sh:datatype xsd:string ;
+    ]
+  ) ;
+  sh:path skos:editorialNote ;
+  .
+
+ucns:_SkosExampleProperty
+  sh:message "An example should give a natural language description of the property or class." ;
+  sh:minCount "0"^^xsd:integer ;
+  sh:or (
+    [
+      sh:datatype rdf:langString ;
+    ]
+    [
+      sh:datatype xsd:string ;
+    ]
+  ) ;
+  sh:path skos:example ;
+  .
+
+ucns:_SkosScopeNoteProperty
+  sh:message "Scope Notes are encouraged." ;
+  sh:minCount "0"^^xsd:integer ;
+  sh:or (
+    [
+      sh:datatype xsd:string ;
+    ]
+    [
+      sh:datatype rdf:langString ;
+    ]
+  ) ;
+  sh:path skos:scopeNote ;
+  .
+
+ucns:commentingOut
+  sh:maxCount "1"^^xsd:integer ;
+  sh:minCount "1"^^xsd:integer ;
+  sh:node [
+    a sh:NodeShape ;
+    rdfs:label "a list node shape" ;
+    sh:property [
+      rdfs:comment "Each list member (including this node) must be have the shape shsh:ListNodeShape."@en ;
+      sh:hasValue rdf:nil ;
+      sh:node [
+        sh:or (
+          [
+            sh:hasValue rdf:nil ;
+            sh:property
+              [
+                sh:maxCount "0"^^xsd:integer ;
+                sh:path rdf:first ;
+              ] ,
+              [
+                sh:maxCount "0"^^xsd:integer ;
+                sh:path rdf:rest ;
+              ]
+              ;
+          ]
+          [
+            sh:not [
+              sh:hasValue rdf:nil ;
+            ] ;
+            sh:property
+              [
+                sh:class (
+                  owl:Class
+                  owl:Restriction
+                ) ;
+                sh:maxCount "1"^^xsd:integer ;
+                sh:minCount "1"^^xsd:integer ;
+                sh:path rdf:first ;
+              ] ,
+              [
+                sh:maxCount "1"^^xsd:integer ;
+                sh:minCount "1"^^xsd:integer ;
+                sh:path rdf:rest ;
+              ]
+              ;
+          ]
+        ) ;
+      ] ;
+      sh:path [
+        sh:zeroOrMorePath rdf:rest ;
+      ] ;
+    ] ;
+  ] ;
+  sh:path owl:equivalentClass ;
+  .
+
