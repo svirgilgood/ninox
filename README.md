@@ -1,4 +1,4 @@
-# ontobean
+# ninox
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ontobean.svg)](https://pypi.org/project/ontobean)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ontobean.svg)](https://pypi.org/project/ontobean)
@@ -13,7 +13,7 @@
 ## Installation
 
 ```console
-pip install ontobean
+pip install ninox
 ```
 
 ## License
