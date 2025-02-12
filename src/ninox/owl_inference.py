@@ -7,7 +7,7 @@ from rdflib.namespace import RDF, Namespace
 
 from .bcolors import BColors
 
-NINOX = Namespace("http://svirgilgood.github.io/ninox/onto#")
+NINOX = Namespace("https://svirgilgood.github.io/ninox/onto#")
 
 
 def inference_validation(data_graph: Graph, test_graph: Graph) -> list[tuple[bool, str]]:
