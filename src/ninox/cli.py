@@ -7,6 +7,8 @@ from rdflib.exceptions import ParserError
 
 from . import owl_inference, query_validation, shacl_validate
 from .bcolors import BColors
+from .initialize import initizalize_git
+from .formatter import format_turtle
 
 
 def import_rdf(path_item: str, graph: Graph) -> Graph:
@@ -36,23 +38,41 @@ def cli():
     """Import and infer triples"""
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--data", nargs="+",
-                        help="Point to the different rdf files or directory for the data to validate and test.")
-    parser.add_argument('-s', "--shape", nargs="*", help="")
-    parser.add_argument('-q', "--query-directory", nargs="*",
-                        help="the directory that contains the sparql query files.")
-    parser.add_argument('-t', '--test-data', nargs="*",
-                        help="Directory or files which contains rdf files that contain test data.")
-    parser.add_argument("--shacl-validate",
-                        action="store_true", help="run shacl validation")
-    parser.add_argument("--query-validate", action="store_true",
-                        help="run queries to validate shacl")
-    parser.add_argument("--run-inference", action="store_true",
-                        help="run inference on data files")
-    parser.add_argument("-a", '--all', action="store_true",
-                        help="run all of the validation checks: inference, queries, and shacl shapes")
+
+    subparser = parser.add_subparsers(help="subcommands")
+    hook_parser = subparser.add_parser(
+        "validate", aliases=["v"], help="command for validating RDF models.")
+
+    hook_parser.add_argument("-d", "--data", nargs="+",
+                             help="Point to the different rdf files or directory for the data to validate and test.")
+    hook_parser.add_argument('-s', "--shape", nargs="*", help="")
+    hook_parser.add_argument('-q', "--query-directory", nargs="*",
+                             help="the directory that contains the sparql query files.")
+    hook_parser.add_argument('-t', '--test-data', nargs="*",
+                             help="Directory or files which contains rdf files that contain test data.")
+    hook_parser.add_argument("--shacl-validate",
+                             action="store_true", help="run shacl validation")
+    hook_parser.add_argument("--query-validate", action="store_true",
+                             help="run queries to validate shacl")
+    hook_parser.add_argument("--run-inference", action="store_true",
+                             help="run inference on data files")
+    hook_parser.add_argument("-a", '--all', action="store_true",
+                             help="run all of the validation checks: inference, queries, and shacl shapes")
+
+    init_parser = subparser.add_parser(
+        "init", help="Initialize a git directory for use with the commands")
+    init_parser.set_defaults(func=initizalize_git)
+
+    fmt_parser = subparser.add_parser(
+        "fmt", help="Format all of the turtle files to be staged for commit")
+    fmt_parser.set_defaults(func=format_turtle)
 
     args = parser.parse_args()
+    try:
+        args.func()
+        return
+    except AttributeError:
+        pass
 
     data_graph = Graph()
     shape_graph = Graph()
