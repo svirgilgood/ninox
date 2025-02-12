@@ -92,11 +92,10 @@ def write_template(target_path: str, template: PosixPath):
 
 def initizalize_git():
     # initialize git repository
-    if is_git():
-        pass
-    else:
-        change_to_git_root()
-        subprocess.run(["git", "init"], check=False)
+    if not is_git():
+        subprocess.run(["git", "init", "-b", "main"], check=True)
+    change_to_git_root()
+
     # create necessary directories
     print("Ensuring correct scaffolding is in place")
     for path in ("ontology", "shapes", "tools", "tools/serializer", "tests", "tests/queries"):
