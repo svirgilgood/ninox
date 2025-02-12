@@ -4,10 +4,13 @@ from pathlib import Path
 import sys
 
 
-def format_turtle():
-
-    staged_files = subprocess.run(
-        ["git", "diff", "--cached", "--name-only"], capture_output=True).stdout.decode("utf-8").split('\n')
+def format_turtle(args):
+    print("args in the format_turtle", args)
+    if args.turtle_files:
+        staged_files = args.turtle_files
+    else:
+        staged_files = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"], capture_output=True).stdout.decode("utf-8").split('\n')
 
     if len(staged_files) < 1:
         return
