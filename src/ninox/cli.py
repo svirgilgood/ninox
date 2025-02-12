@@ -66,10 +66,12 @@ def cli():
     fmt_parser = subparser.add_parser(
         "fmt", help="Format all of the turtle files to be staged for commit")
     fmt_parser.set_defaults(func=format_turtle)
+    fmt_parser.add_argument(
+        "turtle_files", nargs="*", help="Optional arguments for specific turtle files can be added here")
 
     args = parser.parse_args()
     try:
-        args.func()
+        args.func(args)
         return
     except AttributeError:
         pass
