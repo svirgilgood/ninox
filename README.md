@@ -9,9 +9,9 @@
 
 - [Purpose](#Purpose)
 - [Installation](#installation)
-- [SPARQL Query Validation](#SPARQL)
-- [SHACL](#Shacl)
-- [Inference Testing](#Inference)
+- [SPARQL Query Validation](#sparql-query-validation)
+- [SHACL Validation](#shacl-validation)
+- [Inference Testing](#inference-testing)
 - [License](#license)
 
 ## Purpose 
