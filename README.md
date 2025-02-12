@@ -1,7 +1,7 @@
 # ninox
 
-[![PyPI - Version](https://img.shields.io/pypi/v/ontobean.svg)](https://pypi.org/project/ontobean)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ontobean.svg)](https://pypi.org/project/ontobean)
+[![PyPI - Version](https://img.shields.io/pypi/v/ninox.svg)](https://pypi.org/project/ninox)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ninox.svg)](https://pypi.org/project/ninox)
 
 -----
 
@@ -20,16 +20,21 @@ The purpose of this script is to provide a suite of tools for using git to
 develop and validate ontologies and RDF data models with git hooks.
 
 First, it provides a deterministic formatter by downloading and wrapping
-`rdf-toolkit` to provide a consistent code style and order to turtle files.
+[`rdf-toolkit`](https://github.com/edmcouncil/rdf-toolkit) to provide a consistent code style and order to turtle files.
 
-Second, it provides a query harness to allow for automated tests to ensure the
+Second, it provides SHACL shapes that can validate an ontology in owl syntax.
+This provides an opinionated style enforcement for ontologies. For example, all
+classes and properties must have `skos:prefLabel` and classes must be title
+cased, and properties must be lower cased.
+
+Third, it provides a query harness to allow for automated tests to ensure the
 quality of the ontology. A provided query `undefined_terms.rq`, searches for any
 term that is referenced or used but doesn't have a class definition.
 
-Third, it provides an OWL inference engine that can be used to create tests data
-to prove the consistency of the ontology.
+Fourth, it provides an OWL inference engine that can be used to create tests
+data to prove the consistency of the ontology.
 
-Fourth, these functions can be called individually, but they are also
+Fifth, these functions can be called individually, but they are also
 conveniently wrapped in a pre-commit hook.
 
 ## Installation
@@ -94,52 +99,63 @@ For example, the ontology:
 
 ```turtle 
 @prefix ex: <https://www.example.com#> .
-@prefix ninox <https://svirgilgood.github.io/ninox/onto#> .
+@prefix ninox: <https://svirgilgood.github.io/ninox/onto#> .
 
-ex:StopSign 
+ex:StopSign
   a owl:Class ;
-  skos:prefLabel "Stop Sign" ;
-  skos:definition "A sign that signals you to stop" ;
   owl:equivalentClass [
     a owl:Class ;
     owl:intersectionOf (
-      ex:Sign 
-      [ 
+      ex:Sign
+      [
         a owl:Restriction ;
         owl:onProperty ex:sides ;
         owl:hasValue ex:EightSides ;
       ]
-      [ 
+      [
         a owl:Restriction ;
-        owl:onProperty ex:color ;
+        owl:onProperty ex:hasColor ;
         owl:hasValue ex:Red ;
       ]
-    )
+    ) ;
   ] ;
+  skos:definition "A sign that signals you to stop" ;
+  skos:prefLabel "Stop Sign" ;
   .
-
-  
 ```
-Could be tested with the following instance.
+
+Could be tested with the following instance:
 
 ```turtle 
-ex:_TestSignA 
-  a ex:Sign , ninox:InferenceTest ;
+ex:_TestSignA
+  a
+    ninox:InferenceTest ,
+    ex:Sign
+    ;
+  ninox:expectedClass
+    rdfs:Resource ,
+    owl:Thing ,
+    ninox:InferenceTest ,
+    ex:Sign ,
+    ex:StopSign
+    ;
+  ex:hasColor ex:Red ;
   ex:sides ex:EightSides ;
-  ex:color ex:Red ;
-  ninox:expectedClass rdfs:Resource , owl:Thing, ex:Sign, ex:StopSign ;
   .
-  
 ```
+
+
 
 ## Usage
 
-`ninox` has three subcommands: `validate`, `fmt`, and `init`. 
+`ninox` has three subcommands: `validate`, `fmt`, and `init`.
 
-`ninox init` - will only be used for initializing the repository, creating the directory structure and creating 
-the templates.
+`ninox init` - will only be used for initializing the repository, creating the
+directory structure and creating the templates.
 
-`ninox fmt` - is a wrapper for `rdf-toolkit` with sane defaults.
+`ninox fmt` - is a wrapper for `rdf-toolkit` with sane defaults, if called with
+a turtle file, it will only run the formatter on that file, if run without
+arguments it will run the formatter on all files staged for commit.
 
 `ninox validate` - has many options for testing and validating. See `ninox validate --help` for more information.
 
