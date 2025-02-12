@@ -17,10 +17,10 @@
 ## Purpose 
 
 The purpose of this script is to provide a suite of tools for using git to
-develop and validate ontologies and RDF data models with git. 
+develop and validate ontologies and RDF data models with git hooks.
 
 First, it provides a deterministic formatter by downloading and wrapping
-`rdf-toolkit` to provide a consistent code style and order to turtle files. 
+`rdf-toolkit` to provide a consistent code style and order to turtle files.
 
 Second, it provides a query harness to allow for automated tests to ensure the
 quality of the ontology. A provided query `undefined_terms.rq`, searches for any
@@ -34,7 +34,7 @@ conveniently wrapped in a pre-commit hook.
 
 ## Installation
 
-Hopefully installation soon will be as simple as: 
+Hopefully installation soon will be as simple as:
 
 ```console 
 pip install ninox 
@@ -94,13 +94,13 @@ For example, the ontology:
 
 ```turtle 
 @prefix ex: <https://www.example.com#> .
-@prefix ninox <https://svirgilgood.github.io/ninox/onto/> .
+@prefix ninox <https://svirgilgood.github.io/ninox/onto#> .
 
 ex:StopSign 
   a owl:Class ;
-skos:prefLabel "Stop Sign" ;
-skos:definition "A sign that signals you to stop" ;
-owl:equivalentClass [
+  skos:prefLabel "Stop Sign" ;
+  skos:definition "A sign that signals you to stop" ;
+  owl:equivalentClass [
     a owl:Class ;
     owl:intersectionOf (
       ex:Sign 
@@ -132,6 +132,16 @@ ex:_TestSignA
   
 ```
 
+## Usage
+
+`ninox` has three subcommands: `validate`, `fmt`, and `init`. 
+
+`ninox init` - will only be used for initializing the repository, creating the directory structure and creating 
+the templates.
+
+`ninox fmt` - is a wrapper for `rdf-toolkit` with sane defaults.
+
+`ninox validate` - has many options for testing and validating. See `ninox validate --help` for more information.
 
 
 ## License
