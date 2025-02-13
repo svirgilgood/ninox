@@ -5,7 +5,6 @@ import sys
 
 
 def format_turtle(args):
-    print("args in the format_turtle", args)
     if args.turtle_files:
         staged_files = args.turtle_files
     else:
