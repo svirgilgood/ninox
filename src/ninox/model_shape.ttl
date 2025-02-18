@@ -481,6 +481,9 @@ ucns:_RestrictionsomeValuesFromProperty
       sh:class owl:Class ;
     ]
     [
+      sh:class rdfs:Class ;
+    ]
+    [
       sh:class rdfs:Datatype ;
     ]
     [
