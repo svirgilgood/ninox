@@ -171,15 +171,26 @@ tools/
     # Move data files
     # First copy the undefined term query into the queries
     print("Copying over the Undefined Terms Query")
-    write_template(Path("tests")/"queries"/"undefined_terms.rq", term_query)
+    undefined_path = Path("tests")/"queries"/"undefined_terms.rq"
+    if not undefined_path.exists():
+        write_template(undefined_path, term_query)
 
     # Next copy the shape into the shapes directory
     print("Copying the model shape")
-    write_template(Path("shapes")/"model_shape.ttl", model_shape)
+    model_shape_path = Path("shapes")/"model_shape.ttl"
+    if not model_shape_path.exists():
+        write_template(Path("shapes")/"model_shape.ttl", model_shape)
 
     # Next copy the pre-commit hook into the .git directory
     print("Copying the pre-commit hook and making it executable")
     pre_commit_path = Path(".git")/"hooks"/"pre-commit"
-    write_template(pre_commit_path, pre_commit)
-    os.chmod(pre_commit_path, stat.S_IRWXU | stat.S_IRUSR | stat.S_IWUSR |
-             stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IXOTH | stat.S_IROTH)
+    if pre_commit_path.exists():
+        is_githook_overwrite = input(
+            "Should the existing git hook be over written? y/n\n")
+        if is_githook_overwrite != 'y':
+            return
+        pre_commit_path.unlink()
+
+        write_template(pre_commit_path, pre_commit)
+        os.chmod(pre_commit_path, stat.S_IRWXU | stat.S_IRUSR | stat.S_IWUSR |
+                 stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IXOTH | stat.S_IROTH)
