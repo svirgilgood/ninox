@@ -5,7 +5,7 @@ from rdflib import Graph
 from .bcolors import BColors
 
 
-def validate(query_path: str, graph: Graph) -> tuple[bool, str]:
+def validate(query_path: str, graph: Graph) -> list[tuple[bool, str]]:
     validation: list[tuple[bool, str]] = []
 
     for q_file in os.listdir(query_path):

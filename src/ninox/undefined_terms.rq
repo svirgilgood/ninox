@@ -219,7 +219,12 @@ WHERE {
     # Find all of the classes referenced by sh:class and make sure
     # that they have a definition.
     # ############################################################
-    ?item sh:class ?undefinedTerm .
+    ?item ?refClass ?undefinedTerm .
+    VALUES ?refClass {
+      sh:class
+      rdfs:range
+      rdfs:domain
+    }
     FILTER NOT EXISTS {
       ?undefinedTerm rdf:type owl:Class .
     }
@@ -234,10 +239,15 @@ WHERE {
       rdf:Property,
       rdfs:Class,
       rdfs:Datatype,
+      rdfs:Literal,
+      rdfs:Resource,
       sh:PrefixDeclaration,
       sh:NodeShape,
       sh:ShapeNode,
-      sh:SPARQLConstraint
+      sh:SPARQLConstraint,
+      xsd:nonNegativeInteger,
+      xsd:integer,
+      xsd:string
       )
     )
   }
